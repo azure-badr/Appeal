@@ -166,7 +166,7 @@ async def ban_appeal():
         "If not specified, the default is 3 months. If the ban is permanent, use `.reject 0`."
     )
 
-    return "Ban appeal submitted successfully."
+    return redirect("/profile")
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
