@@ -138,7 +138,13 @@ async def ban_appeal():
     })
 
     appeal_channel = bot.get_channel(int(config["BAN_APPEAL_CHANNEL_ID"]))
-    message = await appeal_channel.send(f"**User:** {user_data['username']}#{user_data['discriminator']} - {user_id}\n**Reason:** {reason}")
+    message = await appeal_channel.send(
+        f"**User:** {user_data['username']}#{user_data['discriminator']}\n"
+        f"**ID:** {user_id}\n\n"
+        f"**Reason:** {reason}\n\n"
+        "**Please use the thread below to discuss this ban appeal**"
+    )
+
     await appeal_channel.create_thread(
         name=f"{user_data['username']}#{user_data['discriminator']} - {user_id}",
         message=message,
