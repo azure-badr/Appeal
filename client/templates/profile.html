@@ -24,7 +24,11 @@
       {% elif user_ban_appeal_data.status == "rejected" %}
         <h1>Your ban appeal has been rejected.</h1>
         <p>Status: {{ user_ban_appeal_data.status }}</p>
-        <p>You can re-appeal in 1 month</p>
+        {% if user_ban_appeal_data.reappeal_time == 0 %}
+          <p>This ban is permanent</p>
+        {% else %}
+          <p>You can reappeal in {{ user_ban_appeal_data.reappeal_time }} days</p>
+        {% endif %}
       {% else %}
         <h1>Your ban appeal is currently being reviewed.</h1>
         <p>Status: {{ user_ban_appeal_data.status }}</p>

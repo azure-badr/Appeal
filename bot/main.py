@@ -41,10 +41,11 @@ def is_ban_appeal_channel():
 async def reject(ctx, duration_in_months=3):
 	thread = ctx.channel
 
-	current_time = time.time()
 	original_duration_in_months = duration_in_months
 	duration_in_months = int(duration_in_months)
-	duration_in_months = int(current_time + (duration_in_months * 30 * 24 * 60 * 60))
+
+	if not duration_in_months == 0:
+		duration_in_months = int(time.time() + (duration_in_months * 30 * 24 * 60 * 60))
 
 	user_id = int(thread.name.split(" - ")[1])
 	database.banAppeals.update_one(
@@ -57,7 +58,10 @@ async def reject(ctx, duration_in_months=3):
 		}
 	)
 
-	await thread.send(f"This ban appeal has been rejected. They can re-appeal after {original_duration_in_months} months.")
+	await thread.send(
+		"This ban appeal has been rejected. "
+		f"{'This ban is permanent.' if original_duration_in_months == 0 else f'The user can re-appeal after {original_duration_in_months} months.'}"
+	)
 	await thread.edit(locked=True, archived=True)
 
 @bot.command()
