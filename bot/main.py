@@ -79,9 +79,9 @@ async def accept(ctx):
 	await thread.edit(locked=True, archived=True)
 
 	# Send reference to thread to ban-reasons channel
-	ban_reasons_channel = bot.get_channel(int(config["BAN_REASONS_CHANNEL_ID"]))
+	ban_reasons_channel = ctx.guild.get_channel(int(config["BAN_REASONS_CHANNEL_ID"]))
 
-	await asyncio.sleep(5)
+	await asyncio.sleep(6)
 	await ban_reasons_channel.send(f"{thread.mention}")
 
 @reject.error
