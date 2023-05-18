@@ -1,0 +1,103 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #313338;
+  font-family: sans-serif;
+  color: white;
+  padding: 1rem;
+}
+
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-direction: column;
+  width: 500px;
+  gap: 1rem;
+}
+
+.form textarea {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1E1F22;
+  border: 1px solid #1E1F22;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  transition: border 100ms ease-in-out
+}
+
+.form textarea:focus {
+  outline: none;
+  border: 1px solid #5865F2;
+}
+
+.form .required {
+  position: relative;
+  font-size: 15px;
+  align-self: flex-end;
+  opacity: 0.5;
+}
+
+.form input {
+  padding: 1rem 2.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  background-color: hsl(235, 86%, 65%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+}
+
+.form input:hover {
+  background-color: hsl(235, 86%, 60%);
+}
+
+.status {
+  padding: 1rem;
+  font-weight: bold;
+  width: fit-content;
+  background: #1E1F22;
+  border-radius: 10px;
+}
+
+.status-text {
+  font-weight: 400;
+}
+
+.accepted {
+  color: hsl(120, 65%, 70%);
+}
+
+.rejected {
+  color: hsl(0, 65%, 70%);
+}
+
+.review {
+  color: hsl(50, 65%, 70%);
+}
+
+.reason {
+  font-size: 1.5rem;
+}
+
+.link {
+  font-weight: bold;
+  color: hsl(235, 86%, 75%);
+  background-color: #1E1F22;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.link:hover {
+  background-color: #1E1F22;
+  color: hsl(235, 86%, 70%);
+}
