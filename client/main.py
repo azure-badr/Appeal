@@ -19,7 +19,7 @@ config = json.load(open("config.json"))
 client = MongoClient(config["MONGODB_URI"]) # os.environ.get("MONGO_URL")
 database = client.appeal
 
-intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True)
+intents = discord.Intents(guilds=True, members=True, bans=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 @bot.event
