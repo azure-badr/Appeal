@@ -126,9 +126,6 @@ async def ban_appeal():
         f"**Banned reason / Banned by**: {ban_entry.reason}"
     )
     
-    # Do something with the submitted form data
-    # For example, you can store the ban appeal in a database or send it to a designated channel on Discord
-
     return "Ban appeal submitted successfully."
 
 if __name__ == "__main__":
