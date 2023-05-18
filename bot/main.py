@@ -1,4 +1,5 @@
 import json
+import asyncio
 
 from pymongo import MongoClient
 
@@ -76,6 +77,12 @@ async def accept(ctx):
 
 	await thread.send("This ban appeal has been accepted. The user has been unbanned")
 	await thread.edit(locked=True, archived=True)
+
+	# Send reference to thread to ban-reasons channel
+	ban_reasons_channel = bot.get_channel(int(config["BAN_REASONS_CHANNEL_ID"]))
+
+	await asyncio.sleep(5)
+	await ban_reasons_channel.send(f"{thread.mention}")
 
 @reject.error
 @accept.error
