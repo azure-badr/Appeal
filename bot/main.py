@@ -1,12 +1,18 @@
 import json
 
-from discord.ext import commands
+from pymongo import MongoClient
+
+config = json.load(open("config.json"))
+
+client = MongoClient(config["MONGODB_URI"]) # os.environ.get("MONGO_URL")
+database = client.appeal
+
 import discord
+from discord.ext import commands
 
 intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
-config = json.load(open("config.json"))
 
 @bot.event
 async def on_ready():
@@ -31,7 +37,16 @@ def is_ban_appeal_channel():
 @is_ban_appeal_channel()
 @commands.has_permissions(ban_members=True)
 async def reject(ctx):
-	await ctx.send("Test")
+	thread = ctx.channel
+
+	user_id = int(thread.name.split(" - ")[1])
+	database.banAppeals.update_one(
+		{ "user_id": user_id }, 
+		{ "$set": { "status": "rejected" } }
+	)
+
+	await thread.send("This ban appeal has been rejected.")
+	await thread.edit(locked=True, archived=True)
 
 @bot.command()
 @is_ban_appeal_channel()
