@@ -42,7 +42,11 @@ async def reject(ctx):
 	user_id = int(thread.name.split(" - ")[1])
 	database.banAppeals.update_one(
 		{ "user_id": user_id }, 
-		{ "$set": { "status": "rejected" } }
+		{ "$set": { 
+				"status": "rejected", 
+				"attended_by": ctx.author.id
+			}
+		}
 	)
 
 	await thread.send("This ban appeal has been rejected.")
@@ -52,7 +56,26 @@ async def reject(ctx):
 @is_ban_appeal_channel()
 @commands.has_permissions(ban_members=True)
 async def accept(ctx):
-	await ctx.send("Test")
+	thread = ctx.channel
+
+	user_id = int(thread.name.split(" - ")[1])
+	database.banAppeals.update_one(
+		{ "user_id": user_id }, 
+		{ "$set": { 
+				"status": "accepted", 
+				"attended_by": ctx.author.id
+			}
+		}
+	)
+
+	try:
+		user = await bot.fetch_user(user_id)
+		await ctx.guild.unban(user)
+	except Exception as error:
+		await thread.send(error)
+
+	await thread.send("This ban appeal has been accepted. The user has been unbanned")
+	await thread.edit(locked=True, archived=True)
 
 @reject.error
 @accept.error
