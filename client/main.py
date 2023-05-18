@@ -141,7 +141,7 @@ async def ban_appeal():
     message = await appeal_channel.send(
         f"**Username:** {user_data['username']}#{user_data['discriminator']}\n"
         f"**User ID:** {user_id}\n\n"
-        f"**Why they think they were banned:** {ban_reason}\n\n"
+        f"**Why they think they were banned:** {ban_reason}\n"
         f"**Why they should be unbanned:** {reason}\n\n"
         "**Please use the thread to discuss this ban appeal**"
     )
