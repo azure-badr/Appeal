@@ -1,3 +1,4 @@
+import time
 import json
 import asyncio
 
@@ -109,6 +110,10 @@ async def profile():
     
     user_id = int(user_data["id"])
     user_ban_appeal_data = database.banAppeals.find_one({"user_id": user_id})
+
+    if user_ban_appeal_data.get("reappeal_time") and user_ban_appeal_data["reappeal_time"] > 0:
+        user_ban_appeal_data["reappeal_time"] = round((user_ban_appeal_data["reappeal_time"] - time.time()) / (30 * 24 * 60 * 60))
+    
     ban_entry = ban_cache.get(user_id)
     if ban_entry is None:
         return "You are not banned."
