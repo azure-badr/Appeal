@@ -145,11 +145,16 @@ async def ban_appeal():
         "**Please use the thread below to discuss this ban appeal**"
     )
 
-    await appeal_channel.create_thread(
+    thread = await appeal_channel.create_thread(
         name=f"{user_data['username']}#{user_data['discriminator']} - {user_id}",
         message=message,
         reason=f"Ban appeal for {user_data['username']}#{user_data['discriminator']} - {user_id}",
         auto_archive_duration=10080 # 7 days
+    )
+
+    await thread.send(
+        "To reject this ban appeal, use `.reject`\n"
+        "To accept this ban appeal, use `.accept` or `.unban <user_id>`"
     )
 
     return "Ban appeal submitted successfully."
