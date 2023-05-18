@@ -1,5 +1,6 @@
 import json
 import asyncio
+import time
 
 from pymongo import MongoClient
 
@@ -37,20 +38,26 @@ def is_ban_appeal_channel():
 @bot.command()
 @is_ban_appeal_channel()
 @commands.has_permissions(ban_members=True)
-async def reject(ctx):
+async def reject(ctx, duration_in_months=3):
 	thread = ctx.channel
+
+	current_time = time.time()
+	original_duration_in_months = duration_in_months
+	duration_in_months = int(duration_in_months)
+	duration_in_months = int(current_time + (duration_in_months * 30 * 24 * 60 * 60))
 
 	user_id = int(thread.name.split(" - ")[1])
 	database.banAppeals.update_one(
 		{ "user_id": user_id }, 
 		{ "$set": { 
 				"status": "rejected", 
-				"attended_by": ctx.author.id
+				"attended_by": ctx.author.id,
+				"reappeal_time": duration_in_months
 			}
 		}
 	)
 
-	await thread.send("This ban appeal has been rejected.")
+	await thread.send(f"This ban appeal has been rejected. They can re-appeal after {original_duration_in_months} months.")
 	await thread.edit(locked=True, archived=True)
 
 @bot.command()

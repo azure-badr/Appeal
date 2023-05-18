@@ -156,7 +156,8 @@ async def ban_appeal():
     await thread.send(
         "To reject this ban appeal, use `.reject`\n"
         "To accept this ban appeal, use `.accept`\n"
-        "To reject and let the user re-appeal after some specified time, use `.reject <time>`\n"
+        "To reject and let the user re-appeal after some months, use `.reject <number of months>`\n"
+        "i.e `.reject 4` to reject and let the user re-appeal after 4 months. The default is 3 months if not specified"
     )
 
     return "Ban appeal submitted successfully."
