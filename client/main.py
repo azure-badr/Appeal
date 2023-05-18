@@ -127,13 +127,13 @@ async def ban_appeal():
 
     form = await request.form
     reason = form.get("reason")
-
-    ban_entry = ban_cache.get(user_id)
+    ban_reason = form.get("ban_reason")
 
     database.banAppeals.insert_one({
         "user_id": user_id,
         "username": user_data["username"],
         "reason": reason,
+        "ban_reason": ban_reason,
         "status": "pending",
     })
 
