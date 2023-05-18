@@ -6,5 +6,6 @@
   "BAN_APPEAL_CHANNEL_ID": "",
   "REDIRECT_URI": "",
   "SESSION_TYPE": "",
-  "SECRET_KEY": ""
+  "SECRET_KEY": "",
+  "MONGODB_URI": ""
 }

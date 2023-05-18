@@ -11,10 +11,16 @@ from quart_session import Session
 from discord.ext import commands
 import discord
 
-intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True)
-bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
+from pymongo import MongoClient
+
 
 config = json.load(open("config.json"))
+
+client = MongoClient(config["MONGODB_URI"]) # os.environ.get("MONGO_URL")
+database = client.appeal
+
+intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True)
+bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
@@ -102,12 +108,13 @@ async def profile():
         return "User data not found. Please login first."
     
     user_id = int(user_data["id"])
-
+    user_ban_appeal_data = database.banAppeals.find_one({"user_id": user_id})
+    
     ban_entry = ban_cache.get(user_id)
     if ban_entry is None:
         return "You are not banned."
 
-    return await render_template("profile.html", user_data=user_data, ban_entry=ban_entry)
+    return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, ban_entry=ban_entry)
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():
@@ -115,10 +122,20 @@ async def ban_appeal():
     if user_data is None:
         return "User data not found. Please login first."
     
+    user_id = int(user_data["id"])
+    if database.banAppeals.find_one({"user_id": user_id}):
+        return "You have already submitted a ban appeal."
+
     form = await request.form
     reason = form.get("reason")
 
-    ban_entry = ban_cache.get(int(user_data["id"]))
+    ban_entry = ban_cache.get(user_id)
+
+    database.banAppeals.insert_one({
+        "user_id": user_id,
+        "reason": reason,
+        "status": "pending",
+    })
 
     appeal_channel = bot.get_channel(int(config["BAN_APPEAL_CHANNEL_ID"]))
     await appeal_channel.send(
