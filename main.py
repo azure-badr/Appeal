@@ -109,7 +109,6 @@ async def profile():
     
     user_id = int(user_data["id"])
     user_ban_appeal_data = database.banAppeals.find_one({"user_id": user_id})
-    
     ban_entry = ban_cache.get(user_id)
     if ban_entry is None:
         return "You are not banned."
@@ -133,16 +132,20 @@ async def ban_appeal():
 
     database.banAppeals.insert_one({
         "user_id": user_id,
+        "username": user_data["username"],
         "reason": reason,
         "status": "pending",
     })
 
     appeal_channel = bot.get_channel(int(config["BAN_APPEAL_CHANNEL_ID"]))
-    await appeal_channel.send(
-        f"**{user_data['username']}#{user_data['discriminator']}** ({user_data['id']}) has submitted a ban appeal:\n```{reason}```"
-        f"**Banned reason / Banned by**: {ban_entry.reason}"
+    message = await appeal_channel.send(f"**User:** {user_data['username']}#{user_data['discriminator']} - {user_id}\n**Reason:** {reason}")
+    await appeal_channel.create_thread(
+        name=f"{user_data['username']}#{user_data['discriminator']} - {user_id}",
+        message=message,
+        reason=f"Ban appeal for {user_data['username']}#{user_data['discriminator']} - {user_id}",
+        auto_archive_duration=10080 # 7 days
     )
-    
+
     return "Ban appeal submitted successfully."
 
 if __name__ == "__main__":
