@@ -12,7 +12,7 @@ database = client.appeal
 import discord
 from discord.ext import commands
 
-intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True)
+intents = discord.Intents(guilds=True, members=True, messages=True, message_content=True, bans=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 
@@ -21,6 +21,16 @@ async def on_ready():
   guild: discord.Guild = bot.get_guild(int(config["GUILD_ID"]))
   print(f"Online for {guild.name}")
 
+@bot.event
+async def on_member_ban(guild, user):
+    # If user is banned and has a current appeal, set current appeal to None
+
+		user_ban = database.bans.find_one({"user_id": user.id})
+		if user_ban and user_ban.get("current_appeal"):
+				database.bans.update_one(
+					{ "user_id": user.id }, 
+					{ "$set": { "current_appeal": None } }
+				)
 
 # Make separate check predicate for ban appeal channel
 def is_ban_appeal_channel():
