@@ -1,12 +1,10 @@
-import json
+import os
 import asyncio
 import time
 
 from pymongo import MongoClient
 
-config = json.load(open("config.json"))
-
-client = MongoClient(config["MONGODB_URI"]) # os.environ.get("MONGO_URL")
+client = MongoClient(os.environ["MONGODB_URI"]) # os.environ.get("MONGO_URL")
 database = client.appeal
 
 import discord
@@ -18,7 +16,7 @@ bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
-  guild: discord.Guild = bot.get_guild(int(config["GUILD_ID"]))
+  guild: discord.Guild = bot.get_guild(int(os.environ("GUILD_ID")))
   print(f"Online for {guild.name}")
 
 @bot.event
@@ -38,7 +36,7 @@ def is_ban_appeal_channel():
 		if not isinstance(ctx.channel, discord.Thread):
 			return False
 		
-		if not ctx.channel.parent_id == int(config["BAN_APPEAL_CHANNEL_ID"]):
+		if not ctx.channel.parent_id == int(os.environ["BAN_APPEAL_CHANNEL_ID"]):
 			return False
 		
 		return True
@@ -108,7 +106,7 @@ async def accept(ctx):
 	await thread.edit(locked=True, archived=True)
 
 	# Send reference to thread to ban-reasons channel
-	ban_reasons_channel = ctx.guild.get_channel(int(config["BAN_REASONS_CHANNEL_ID"]))
+	ban_reasons_channel = ctx.guild.get_channel(int(os.environ["BAN_REASONS_CHANNEL_ID"]))
 
 	await asyncio.sleep(6)
 	await ban_reasons_channel.send(f"{thread.mention}")
@@ -126,4 +124,4 @@ async def on_command_error(ctx, error):
 		return
 	
 
-bot.run(config["CLIENT_TOKEN"])
+bot.run(os.environ["CLIENT_TOKEN"])
