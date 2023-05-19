@@ -1,6 +1,7 @@
 import os
 import time
 import asyncio
+import datetime
 
 import requests
 import urllib.parse
@@ -142,13 +143,15 @@ async def profile():
             "current_appeal": None,
         })
 
-    if user_ban_appeal_data:
-        if user_ban_appeal_data.get("reappeal_time") and user_ban_appeal_data["reappeal_time"] > 0:
-            user_ban_appeal_data["reappeal_time"] = round((user_ban_appeal_data["reappeal_time"] - time.time()) / (30 * 24 * 60 * 60), 2)
-    
+    reappeal_time = user_ban_appeal_data.get("reappeal_time", None) if user_ban_appeal_data else None
+    if reappeal_time:
+        reappeal_time = reappeal_time - time.time()
+
     # If reappeal time is / has reached 0 and ban is not permanent, then user can reappeal
-    if user_ban_appeal_data and user_ban_appeal_data.get("reappeal_time", 1) <= 0:
-        if not user_ban_appeal_data["permanent"]:
+    if user_ban_appeal_data and user_ban_appeal_data.get("reappeal_time", None):
+
+        # Check if duration has passed
+        if reappeal_time <= 0 and not user_ban_appeal_data["permanent"]:
             database.bans.find_one_and_update(
                 { "user_id": user_id },
                 { "$set": { "current_appeal": None } }
@@ -156,7 +159,14 @@ async def profile():
 
             user_ban_appeal_data = None
 
-    return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, ban_entry=ban_entry)
+        # Set reappeal time
+        print(reappeal_time)
+        if reappeal_time > 0:
+            # Get remaining time in readable format
+            reappeal_time = datetime.timedelta(seconds=reappeal_time)
+            reappeal_time = str(reappeal_time).split(".")[0]
+
+    return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, reappeal_time=reappeal_time)
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():
