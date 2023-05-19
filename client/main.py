@@ -166,7 +166,7 @@ async def ban_appeal():
         "status": "pending",
     })
 
-    database.bans.find_one_and_update(
+    user_ban_appeal = database.bans.find_one_and_update(
         { "user_id": user_id },
         { "$set": {
             "current_appeal": ban_appeal.inserted_id,
@@ -196,5 +196,10 @@ async def ban_appeal():
         "To reject and let the user re-appeal after some months, use `.reject <number of months>`. Example: `.reject 6`\n"
         "If not specified, the default is 3 months. If the ban is permanent, use `.reject 0`."
     )
+
+    if len(user_ban_appeal["appeals"]) > 1:
+        await thread.send(
+            f"⚠️ This user has appealed {len(user_ban_appeal['appeals'])} time(s) before."
+        )
 
     return redirect("/profile")
