@@ -53,7 +53,7 @@ async def cache_setup():
 # Disable other ip addresses access
 @app.before_request
 def limit_remote_addr():
-    if request.remote_addr != '127.0.0.1':
+    if request.remote_addr != os.environ["IP_ADDRESS"]:
         abort(403)  # Forbidden
 
 @bot.event
