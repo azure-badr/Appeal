@@ -6,7 +6,7 @@ import requests
 import urllib.parse
 import urllib.request
 
-from quart import Quart, redirect, render_template, request, session
+from quart import Quart, redirect, render_template, request, session, abort
 
 from discord.ext import commands
 import discord
@@ -49,6 +49,12 @@ async def cache_setup():
     guild = bot.get_guild(int(config["GUILD_ID"]))
     ban_cache = {entry.user.id: entry async for entry in guild.bans(limit=None)}
     print("Loaded ban cache", len(ban_cache))
+
+# Disable other ip addresses access
+@app.before_request
+def limit_remote_addr():
+    if request.remote_addr != '127.0.0.1':
+        abort(403)  # Forbidden
 
 @bot.event
 async def on_member_ban(guild, user):
