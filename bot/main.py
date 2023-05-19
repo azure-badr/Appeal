@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
-  guild: discord.Guild = bot.get_guild(int(os.environ("GUILD_ID")))
+  guild: discord.Guild = bot.get_guild(int(os.environ["GUILD_ID"]))
   print(f"Online for {guild.name}")
 
 @bot.event
