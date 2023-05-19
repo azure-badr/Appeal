@@ -38,7 +38,13 @@ guild = None
 ban_cache = {}
 @app.before_serving
 async def cache_setup():
+    print("Running cache setup")
     global guild, ban_cache
+
+    loop = asyncio.get_event_loop()
+    await bot.login(config["CLIENT_TOKEN"])
+    loop.create_task(bot.connect())
+
     await bot.wait_until_ready()
     guild = bot.get_guild(int(config["GUILD_ID"]))
     ban_cache = {entry.user.id: entry async for entry in guild.bans(limit=None)}
@@ -165,9 +171,3 @@ async def ban_appeal():
     )
 
     return redirect("/profile")
-
-if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    loop.create_task(bot.start(config["CLIENT_TOKEN"]))
-    loop.create_task(app.run_task(port=3000, debug=True))
-    loop.run_forever()
