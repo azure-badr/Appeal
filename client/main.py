@@ -7,7 +7,6 @@ import urllib.parse
 import urllib.request
 
 from quart import Quart, redirect, render_template, request, session
-from quart_session import Session
 
 from discord.ext import commands
 import discord
@@ -30,8 +29,6 @@ async def on_ready():
 
 app = Quart(__name__, static_folder="./templates")
 app.secret_key = config["SECRET_KEY"] #os.environ.get("SECRET_KEY").encode()
-app.config["SESSION_TYPE"] = config["SESSION_TYPE"] #os.environ.get("SESSION_TYPE")
-Session(app)
 
 DISCORD_CLIENT_ID = config["CLIENT_ID"] #os.environ.get("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET = config["CLIENT_SECRET"] #os.environ.get("DISCORD_CLIENT_SECRET")
@@ -45,6 +42,7 @@ async def cache_setup():
     await bot.wait_until_ready()
     guild = bot.get_guild(int(config["GUILD_ID"]))
     ban_cache = {entry.user.id: entry async for entry in guild.bans(limit=None)}
+    print("Loaded ban cache", len(ban_cache))
 
 @bot.event
 async def on_member_ban(guild, user):
