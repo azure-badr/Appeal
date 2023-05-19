@@ -54,10 +54,12 @@ async def cache_setup():
 async def on_member_ban(guild, user):
     ban_entry = await guild.fetch_ban(user)
     ban_cache[user.id] = ban_entry
+    print("Member banned:", user.id)
 
 @bot.event
 async def on_member_unban(guild, user):
     del ban_cache[user.id]
+    print("Member unbanned:", user.id)
 
 @app.route("/")
 async def home():
@@ -110,18 +112,34 @@ async def callback():
 async def profile():
     user_data = session.get("user_data")
     if user_data is None:
-        return "User data not found. Please login first."
+        return redirect("/login")
     
     user_id = int(user_data["id"])
+    ban_entry = ban_cache.get(user_id)
+
+    user_ban = database.bans.find_one({"user_id": user_id})
     user_ban_appeal_data = database.banAppeals.find_one({"user_id": user_id})
+
+    print(ban_entry, len(ban_entry))
+    # If unbanned and no current appeal
+    if user_ban and ban_entry is None:
+        return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
+    
+    if ban_entry is None:
+        return "You are not banned"
+
+    if not user_ban:
+        database.bans.insert_one({
+            "user_id": user_id,
+            "username": f"{user_data['username']}#{user_data['discriminator']}",
+            "appeals": [],
+            "current_appeal": None,
+        })
+
 
     if user_ban_appeal_data:
         if user_ban_appeal_data.get("reappeal_time") and user_ban_appeal_data["reappeal_time"] > 0:
             user_ban_appeal_data["reappeal_time"] = round((user_ban_appeal_data["reappeal_time"] - time.time()) / (30 * 24 * 60 * 60), 2)
-
-    ban_entry = ban_cache.get(user_id)
-    if ban_entry is None:
-        return "You are not banned."
 
     return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, ban_entry=ban_entry)
 
@@ -129,22 +147,31 @@ async def profile():
 async def ban_appeal():
     user_data = session.get("user_data")
     if user_data is None:
-        return "User data not found. Please login first."
+        return redirect("/login")
     
     user_id = int(user_data["id"])
-    if database.banAppeals.find_one({"user_id": user_id}):
-        return "You have already submitted a ban appeal."
+    user_ban_appeal = database.bans.find_one({"user_id": user_id})
+    if user_ban_appeal.get("current"):
+        return redirect("/profile")
 
     form = await request.form
     reason = form.get("reason")
     ban_reason = form.get("ban_reason")
 
-    database.banAppeals.insert_one({
+    ban_appeal = database.banAppeals.insert_one({
         "user_id": user_id,
         "username": user_data["username"],
         "reason": reason,
         "ban_reason": ban_reason,
         "status": "pending",
+    })
+
+    database.bans.find_one_and_update(
+        { "user_id": user_id },
+        { "$set": {
+            "current_appeal": ban_appeal.inserted_id,
+            "appeals": user_ban_appeal["appeals"] + [ban_appeal.inserted_id]
+        }
     })
 
     appeal_channel = bot.get_channel(int(config["BAN_APPEAL_CHANNEL_ID"]))

@@ -31,7 +31,7 @@
       <div class="container">
         <h1 class="status-text rejected">Your ban appeal has been <b>rejected</b>.</h1>
         <p class="status">Status: <span class="rejected">{{ user_ban_appeal_data.status }}</span></p>
-        {% if user_ban_appeal_data.reappeal_time == 0 %}
+        {% if user_ban_appeal_data.permanent %}
           <p>This ban is <b>permanent</b></p>
         {% else %}
           <p>You can reappeal in <b>{{ user_ban_appeal_data.reappeal_time }} month(s)</b></p>
