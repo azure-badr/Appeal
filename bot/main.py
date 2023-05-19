@@ -64,11 +64,6 @@ async def reject(ctx, duration_in_months=3):
 		{ "$set": updated_ban_appeal }
 	)
 
-	database.bans.update_one(
-		{ "user_id": user_id }, 
-		{ "$set": { "current_appeal": None } }
-	)
-
 	await thread.send(
 		"This ban appeal has been rejected. "
 		f"{'This ban is permanent.' if original_duration_in_months == 0 else f'The user can re-appeal after {original_duration_in_months} months.'}"
