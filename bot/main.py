@@ -69,8 +69,9 @@ async def reject(ctx, duration_in_months=3):
 	if original_duration_in_months == 0:
 		updated_ban_appeal["permanent"] = True
 
-	database.banAppeals.update_one(
-		{ "user_id": user_id }, 
+	ban_appeal = database.bans.find_one({"user_id": user_id})
+	database.banAppeals.find_one_and_update(
+		{ "_id": ban_appeal["current_appeal"] }, 
 		{ "$set": updated_ban_appeal }
 	)
 
@@ -87,8 +88,9 @@ async def accept(ctx):
 	thread = ctx.channel
 
 	user_id = int(thread.name.split(" - ")[1])
-	database.banAppeals.update_one(
-		{ "user_id": user_id }, 
+	ban_appeal = database.bans.find_one({"user_id": user_id})
+	database.banAppeals.find_one_and_update(
+		{ "_id": ban_appeal["current_appeal"] }, 
 		{ "$set": { 
 				"status": "accepted", 
 				"attended_by": ctx.author.id
