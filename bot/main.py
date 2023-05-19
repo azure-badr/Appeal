@@ -48,14 +48,19 @@ async def reject(ctx, duration_in_months=3):
 		duration_in_months = int(time.time() + (duration_in_months * 30 * 24 * 60 * 60))
 
 	user_id = int(thread.name.split(" - ")[1])
+
+	updated_ban_appeal = {
+		"status": "rejected",
+		"attended_by": ctx.author.id,
+		"reappeal_time": duration_in_months
+	}
+
+	if original_duration_in_months == 0:
+		updated_ban_appeal["permanent"] = True
+
 	database.banAppeals.update_one(
 		{ "user_id": user_id }, 
-		{ "$set": { 
-				"status": "rejected", 
-				"attended_by": ctx.author.id,
-				"reappeal_time": duration_in_months
-			}
-		}
+		{ "$set": updated_ban_appeal }
 	)
 
 	await thread.send(
