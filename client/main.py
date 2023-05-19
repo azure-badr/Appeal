@@ -1,5 +1,5 @@
+import os
 import time
-import json
 import asyncio
 
 import requests
@@ -13,26 +13,26 @@ import discord
 
 from pymongo import MongoClient
 
-
-config = json.load(open("config.json"))
-
-client = MongoClient(config["MONGODB_URI"]) # os.environ.get("MONGO_URL")
+client = MongoClient(os.environ.get("MONGODB_URI")) 
 database = client.appeal
 
 intents = discord.Intents(guilds=True, members=True, bans=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
+GUILD_ID = int(os.environ.get("GUILD_ID"))
+BAN_APPEAL_CHANNEL_ID = int(os.environ.get("BAN_APPEAL_CHANNEL_ID"))
 @bot.event
 async def on_ready():
-    guild: discord.Guild = bot.get_guild(int(config["GUILD_ID"]))
+    guild: discord.Guild = bot.get_guild(GUILD_ID)
     print(f"Online for {guild.name}")
 
 app = Quart(__name__, static_folder="./templates")
-app.secret_key = config["SECRET_KEY"] #os.environ.get("SECRET_KEY").encode()
+app.secret_key = os.urandom(24)
 
-DISCORD_CLIENT_ID = config["CLIENT_ID"] #os.environ.get("DISCORD_CLIENT_ID")
-DISCORD_CLIENT_SECRET = config["CLIENT_SECRET"] #os.environ.get("DISCORD_CLIENT_SECRET")
-DISCORD_REDIRECT_URI = config["REDIRECT_URI"] #os.environ.get("DISCORD_REDIRECT_URI")
+DISCORD_CLIENT_ID = os.environ.get("CLIENT_ID")
+DISCORD_CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+DISCORD_REDIRECT_URI = os.environ.get("REDIRECT_URI")
+CLIENT_TOKEN = os.environ.get("CLIENT_TOKEN")
 
 guild = None
 ban_cache = {}
@@ -42,11 +42,11 @@ async def cache_setup():
     global guild, ban_cache
 
     loop = asyncio.get_event_loop()
-    await bot.login(config["CLIENT_TOKEN"])
+    await bot.login(CLIENT_TOKEN)
     loop.create_task(bot.connect())
 
     await bot.wait_until_ready()
-    guild = bot.get_guild(int(config["GUILD_ID"]))
+    guild = bot.get_guild(GUILD_ID)
     ban_cache = {entry.user.id: entry async for entry in guild.bans(limit=None)}
     print("Loaded ban cache", len(ban_cache))
 
@@ -111,7 +111,7 @@ async def callback():
     user_data = user_response.json()
     
     session["user_data"] = user_data
-    
+
     return redirect("/profile")
 
 @app.route("/profile")
@@ -141,7 +141,6 @@ async def profile():
             "appeals": [],
             "current_appeal": None,
         })
-
 
     if user_ban_appeal_data:
         if user_ban_appeal_data.get("reappeal_time") and user_ban_appeal_data["reappeal_time"] > 0:
@@ -190,7 +189,7 @@ async def ban_appeal():
         }
     })
 
-    appeal_channel = bot.get_channel(int(config["BAN_APPEAL_CHANNEL_ID"]))
+    appeal_channel = bot.get_channel(BAN_APPEAL_CHANNEL_ID)
     message = await appeal_channel.send(
         f"**Username:** {user_data['username']}#{user_data['discriminator']}\n"
         f"**User ID:** {user_id}\n\n"
