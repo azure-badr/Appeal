@@ -118,9 +118,9 @@ async def profile():
     ban_entry = ban_cache.get(user_id)
 
     user_ban = database.bans.find_one({"user_id": user_id})
-    user_ban_appeal_data = database.banAppeals.find_one({"user_id": user_id})
+    user_ban_appeal_data = \
+        database.banAppeals.find_one({"_id": user_ban.get("current_appeal")}) if user_ban else None
 
-    print(ban_entry, len(ban_entry))
     # If unbanned and no current appeal
     if user_ban and ban_entry is None:
         return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
