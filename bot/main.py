@@ -4,7 +4,7 @@ import time
 
 from pymongo import MongoClient
 
-client = MongoClient(os.environ["MONGODB_URI"]) # os.environ.get("MONGO_URL")
+client = MongoClient(os.environ["MONGODB_URI"])
 database = client.appeal
 
 import discord
