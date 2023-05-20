@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='/home/index.css') }}" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', _scheme='https') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='home/index.css', _scheme='https') }}" />
   <title>Login - Pakcord Appeal</title>
 </head>
 <body>
   <div>
-    <a class="link" href="{{ url_for('login') }}">
+    <a class="link" href="{{ url_for('login', _scheme='https') }}">
       <div class="button">
         Login with Discord
       </div>
