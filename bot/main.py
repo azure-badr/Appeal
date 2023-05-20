@@ -30,6 +30,17 @@ async def on_member_ban(guild, user):
 					{ "$set": { "current_appeal": None } }
 				)
 
+@bot.event
+async def on_member_unban(guild, user):
+	# If user is banned and has a current appeal, set current appeal as accepted
+
+	user_ban = database.bans.find_one({"user_id": user.id})
+	if user_ban and user_ban.get("current_appeal"):
+		database.banAppeals.update_one(
+			{ "_id": user_ban["current_appeal"] }, 
+			{ "$set": { "status": "accepted" } }
+		)
+
 # Make separate check predicate for ban appeal channel
 def is_ban_appeal_channel():
 	def predicate(ctx):
