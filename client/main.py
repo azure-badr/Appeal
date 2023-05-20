@@ -82,7 +82,7 @@ async def login():
 @app.route("/logout")
 async def logout():
     session.pop("user_data", None)
-    return "You have been logged out."
+    return redirect("/")
 
 @app.route("/callback")
 async def callback():
