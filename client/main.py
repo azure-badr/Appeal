@@ -51,12 +51,6 @@ async def cache_setup():
     ban_cache = {entry.user.id: entry async for entry in guild.bans(limit=None)}
     print("Loaded ban cache", len(ban_cache))
 
-# Disable other ip addresses access
-@app.before_request
-def limit_remote_addr():
-    if request.remote_addr != os.environ["IP_ADDRESS"]:
-        abort(403)  # Forbidden
-
 @bot.event
 async def on_member_ban(guild, user):
     ban_entry = await guild.fetch_ban(user)
@@ -159,8 +153,6 @@ async def profile():
 
             user_ban_appeal_data = None
 
-        # Set reappeal time
-        print(reappeal_time)
         if reappeal_time > 0:
             # Get remaining time in readable format
             reappeal_time = datetime.timedelta(seconds=reappeal_time)
