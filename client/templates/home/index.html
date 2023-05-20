@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='/home/index.css') }}" />
+  <title>Login - Pakcord Appeal</title>
+</head>
+<body>
+  <div>
+    <a class="link" href="{{ url_for('login') }}">
+      <div class="button">
+        Login with Discord
+      </div>
+    </a>
+    <p class="data">We only require your username to check if your account is banned. No personal data is stored.</p>
+  </div>
+</body>
+</html>

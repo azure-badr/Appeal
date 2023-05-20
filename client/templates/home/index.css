@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #313338;
+  font-family: sans-serif;
+  color: white;
+  padding: 1rem;
+  margin: 0;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.button {
+  text-align: center;
+  padding: 1rem 0.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  background-color: hsl(235, 85%, 65%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  max-width: 250px;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+}
+
+.button:hover {
+  background-color: hsl(235, 86%, 60%);
+}
+
+.data {
+  opacity: 0.8;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}

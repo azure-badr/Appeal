@@ -65,7 +65,7 @@ async def on_member_unban(guild, user):
 @app.route("/")
 async def home():
     if session.get("user_data") is None:
-        return redirect("/login")
+        return await render_template("home/index.html")
     
     return redirect("/profile")
 
@@ -124,7 +124,7 @@ async def profile():
 
     # If unbanned and no current appeal
     if user_ban and ban_entry is None:
-        return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
+        return await render_template("profile/index.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
     
     if ban_entry is None:
         return "You are not banned"
@@ -158,7 +158,7 @@ async def profile():
             reappeal_time = datetime.timedelta(seconds=reappeal_time)
             reappeal_time = str(reappeal_time).split(".")[0]
 
-    return await render_template("profile.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, reappeal_time=reappeal_time)
+    return await render_template("profile/index.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, reappeal_time=reappeal_time)
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():
