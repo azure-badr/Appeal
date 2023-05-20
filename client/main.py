@@ -127,7 +127,10 @@ async def profile():
         return await render_template("profile/index.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
     
     if ban_entry is None:
-        return "You are not banned"
+        return """
+            <h1>You are not banned 🤦‍♀️</h1>
+            <a href="/logout">Logout</a>
+        """
 
     if not user_ban:
         database.bans.insert_one({
