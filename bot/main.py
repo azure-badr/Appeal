@@ -41,14 +41,17 @@ async def on_member_unban(guild, user):
 			{ "$set": { "status": "accepted" } }
 		)
 
-# Make separate check predicate for ban appeal channel
+
+class NotBanAppealChannel(commands.CheckFailure):
+	pass
+
 def is_ban_appeal_channel():
 	def predicate(ctx):
 		if not isinstance(ctx.channel, discord.Thread):
 			return False
 		
 		if not ctx.channel.parent_id == int(os.environ["BAN_APPEAL_CHANNEL_ID"]):
-			return False
+			raise NotBanAppealChannel("Please use this command in a ban appeal thread.")
 		
 		return True
 	
@@ -125,9 +128,14 @@ async def accept(ctx):
 @reject.error
 @accept.error
 async def ban_appeal_error(ctx, error):
-	if isinstance(error, commands.CheckFailure):
+	if isinstance(error, NotBanAppealChannel):
 		await ctx.send("Please use this command in a ban appeal thread.")
 		return
+	
+	if isinstance(error, commands.MissingPermissions):
+		return
+	
+	await ctx.send("An error occured. Please try again later.", error)
 
 @bot.event
 async def on_command_error(ctx, error):
