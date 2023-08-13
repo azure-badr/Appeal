@@ -73,6 +73,8 @@
         fetch("/appeal", {
           method: "POST",
           body: formData
+        }).then(() => {
+          window.location.href = "/profile";
         });
       }
     </script>
