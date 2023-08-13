@@ -11,7 +11,7 @@
   <body>
     {% if user_ban_appeal_data is none %}
     <h1>Pakcord Ban Appeal</h1>
-    <form class="form" action="/appeal" method="POST" onsubmit="() => event.preventDefault();">
+    <form class="form" action="/appeal" method="POST" onsubmit="onFormSubmit()">
       <label for="ban_reason">Why do you think you were banned?</label>
       <textarea id="ban_reason" name="ban_reason" minlength="10" maxlength="250" rows="2" required></textarea>
       <span class="required">required</span>
@@ -20,7 +20,7 @@
       <textarea id="reason" name="reason" minlength="10" maxlength="1500" rows="5" required></textarea>
       <span class="required">required</span>
 
-      <input class="button" type="submit" value="Submit" />
+      <input id="appeal-button" class="button" type="submit" value="Submit" />
     </form>
     {% else %}
       {% if user_ban_appeal_data.status == "accepted" %}
@@ -57,5 +57,16 @@
         Logout
       </div>
     </a>
+
+    <script>
+      function onFormSubmit(event) {
+        event.preventDefault();
+        
+        const button = document.getElementById("appeal-button");
+
+        button.disabled = true;
+        button.value = "Sending appeal...";
+      }
+    </script>
   </body>
 </html>
