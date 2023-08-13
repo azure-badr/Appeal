@@ -66,6 +66,14 @@
 
         button.disabled = true;
         button.value = "Sending appeal...";
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch("/appeal", {
+          method: "POST",
+          body: formData
+        });
       }
     </script>
   </body>
