@@ -1,12 +1,14 @@
-app = "appeal-bot"
-kill_signal = "SIGINT"
-kill_timeout = 5
-processes = []
+# fly.toml app configuration file generated for appeal-bot on 2023-05-30T13:58:49+05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-[env]
+app = "appeal-bot"
+primary_region = "sin"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
 
 [experimental]
-  allowed_public_ports = []
   auto_rollback = true
 
 [[services]]
