@@ -61,6 +61,11 @@ body {
   background-color: hsl(235, 86%, 60%);
 }
 
+.button:disabled {
+  background-color: hsl(235, 86%, 50%);
+  cursor: not-allowed;
+}
+
 .container {
   display: flex;
   flex-direction: column;
