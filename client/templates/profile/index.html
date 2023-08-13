@@ -11,7 +11,7 @@
   <body>
     {% if user_ban_appeal_data is none %}
     <h1>Pakcord Ban Appeal</h1>
-    <form class="form" action="/appeal" method="POST" onsubmit="onFormSubmit()">
+    <form class="form" action="/appeal" method="POST" onsubmit="onFormSubmit(event)">
       <label for="ban_reason">Why do you think you were banned?</label>
       <textarea id="ban_reason" name="ban_reason" minlength="10" maxlength="250" rows="2" required></textarea>
       <span class="required">required</span>
