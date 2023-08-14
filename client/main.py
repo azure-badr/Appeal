@@ -7,7 +7,7 @@ import requests
 import urllib.parse
 import urllib.request
 
-from quart import Quart, redirect, render_template, request, session, abort
+from quart import Quart, redirect, render_template, request, session, abort, make_response
 
 from discord.ext import commands
 import discord
@@ -223,3 +223,36 @@ async def ban_appeal():
         )
 
     return redirect("/profile")
+
+@app.route("/appeal-status")
+async def appeal():
+    # Check if request does not have event stream headers
+    if "text/event-stream" not in request.accept_mimetypes:
+        abort(400)
+
+    user_data = session.get("user_data")
+    if user_data is None:
+        abort(400)
+    
+    async def get_ban_status():
+        await asyncio.sleep(30)
+        user_ban = database.bans.find_one({"user_id": int(user_data["id"])})
+        if user_ban is None:
+            abort(400)
+        
+        user_ban_appeal = database.banAppeals.find_one({"_id": user_ban["current_appeal"]})
+        if user_ban_appeal is None:
+            abort(400)
+        
+        yield f"""data: {{ "status": "{user_ban_appeal["status"]}" }}\n\n"""
+
+    response = await make_response(
+        get_ban_status(),
+        {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Transfer-Encoding': 'chunked',
+        }
+    )
+    response.timeout = None
+    return response
