@@ -14,4 +14,4 @@ if os.environ.get("ENVIRONMENT") == "production":
     "ENVIRONMENT": os.environ.get("ENVIRONMENT")
   }
 else:
-  config = json.load(open("./config.json"))
+  config = json.load(open("../config.json"))

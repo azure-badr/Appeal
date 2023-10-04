@@ -34,6 +34,7 @@ async def on_ready():
     print(f"Online for {guild.name}")
 
 app = Quart(__name__, static_folder="./templates")
+app.config['EXPLAIN_TEMPLATE_LOADING'] = True # Fix KeyError exception for template loading
 app.secret_key = os.urandom(24)
 
 DISCORD_CLIENT_ID = config["CLIENT_ID"]
