@@ -3,3 +3,4 @@ key.pem
 config.json
 __pycache__
 .env
+config.json

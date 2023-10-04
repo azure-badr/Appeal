@@ -14,14 +14,20 @@ import discord
 
 from pymongo import MongoClient
 
-client = MongoClient(os.environ.get("MONGODB_URI")) 
-database = client.appeal
+from utils.config import config
+
+client = MongoClient(config["MONGODB_URI"])
+
+if os.environ.get("ENVIRONMENT") == "DEVELOPMENT":
+    database = client.appeal_dev
+else:
+    database = client.appeal
 
 intents = discord.Intents(guilds=True, members=True, bans=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
-GUILD_ID = int(os.environ.get("GUILD_ID"))
-BAN_APPEAL_CHANNEL_ID = int(os.environ.get("BAN_APPEAL_CHANNEL_ID"))
+GUILD_ID = int(config["GUILD_ID"])
+BAN_APPEAL_CHANNEL_ID = int(config["BAN_APPEAL_CHANNEL_ID"])
 @bot.event
 async def on_ready():
     guild: discord.Guild = bot.get_guild(GUILD_ID)
@@ -30,10 +36,10 @@ async def on_ready():
 app = Quart(__name__, static_folder="./templates")
 app.secret_key = os.urandom(24)
 
-DISCORD_CLIENT_ID = os.environ.get("CLIENT_ID")
-DISCORD_CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
-DISCORD_REDIRECT_URI = os.environ.get("REDIRECT_URI")
-CLIENT_TOKEN = os.environ.get("CLIENT_TOKEN")
+DISCORD_CLIENT_ID = config["CLIENT_ID"]
+DISCORD_CLIENT_SECRET = config["CLIENT_SECRET"]
+DISCORD_REDIRECT_URI = config["REDIRECT_URI"]
+CLIENT_TOKEN = config["CLIENT_TOKEN"]
 
 guild = None
 ban_cache = {}
