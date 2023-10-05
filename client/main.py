@@ -122,16 +122,22 @@ async def profile():
     if user_data is None:
         return redirect("/login")
     
+    print(f"[!] {user_data['username']} [{user_data['id']}] navigated to /profile")
+
     user_id = int(user_data["id"])
     ban_entry = ban_cache.get(user_id)
 
     user_ban = database.bans.find_one({"user_id": user_id})
     user_ban_appeal_data = \
         database.banAppeals.find_one({"_id": user_ban.get("current_appeal")}) if user_ban else None
-
+    
     # If unbanned and no current appeal
     if user_ban and ban_entry is None:
-        return await render_template("profile/index.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data)
+        return await render_template(
+            "profile/index.html", 
+            user_data=user_data, 
+            user_ban_appeal_data=user_ban_appeal_data,
+        )
     
     if ban_entry is None:
         return """
@@ -168,7 +174,15 @@ async def profile():
             reappeal_time = datetime.timedelta(seconds=reappeal_time)
             reappeal_time = str(reappeal_time).split(".")[0]
 
-    return await render_template("profile/index.html", user_data=user_data, user_ban_appeal_data=user_ban_appeal_data, reappeal_time=reappeal_time)
+    user_ban_record = database.banRecords.find_one({"user_id": user_id})
+
+    return await render_template(
+        "profile/index.html", 
+        user_data=user_data, 
+        user_ban_appeal_data=user_ban_appeal_data, 
+        reappeal_time=reappeal_time,
+        user_ban_record=user_ban_record,
+    )
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():

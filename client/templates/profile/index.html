@@ -11,12 +11,23 @@
   <body>
     {% if user_ban_appeal_data is none %}
     <h1>Pakcord Ban Appeal</h1>
+    {% if user_ban_record is not none %}
+    <div class="container ban-reason">
+      <p style="font-size: 0.8rem;">Ban reason</p>
+      <p style="opacity: 0.6;">{{ user_ban_record.reason }}</p>
+    </div>
+    {% endif %}
     <form class="form" action="/appeal" method="POST" onsubmit="onFormSubmit(event)">
-      <label for="ban_reason">Why do you think you were banned?</label>
+      {% if user_ban_record is not none %}
+      <label for="ban_reason">Considering the above-mentioned reason, why do you believe you were banned?</label>
+      {% else %}
+      <label for="ban_reason">Why do you believe you were banned?</label>
+      {% endif %}
       <textarea id="ban_reason" name="ban_reason" minlength="10" maxlength="250" rows="2" required></textarea>
       <span class="required">required</span>
 
       <label for="reason">Why would you like to be unbanned?</label>
+      <span style="font-size: 0.8rem">You can provide image URLs for screenshots, if needed.</span>
       <textarea id="reason" name="reason" minlength="10" maxlength="1500" rows="5" required></textarea>
       <span class="required">required</span>
 
