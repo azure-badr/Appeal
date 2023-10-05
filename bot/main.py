@@ -37,7 +37,7 @@ async def on_member_ban(guild, user):
 		ban_reason = ban_entry.reason
 
 		# If banner is a bot, get the banner's reason from the ban reason
-		if ban_entry.user.bot:
+		if " | " in ban_reason:
 			# Assuming the bot's reason is in the format "User | Reason"
 			ban_reason_sentence = ban_reason.split(" | ")
 
