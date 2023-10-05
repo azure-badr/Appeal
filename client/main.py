@@ -175,13 +175,18 @@ async def profile():
             reappeal_time = str(reappeal_time).split(".")[0]
 
     user_ban_record = database.banRecords.find_one({"user_id": user_id})
+    ban_reason = None
+
+    if user_ban_record:
+        ban_reason = user_ban_record["reason"] if user_ban_record["reason"] != "" else None
+
 
     return await render_template(
         "profile/index.html", 
         user_data=user_data, 
         user_ban_appeal_data=user_ban_appeal_data, 
         reappeal_time=reappeal_time,
-        user_ban_record=user_ban_record,
+        ban_reason=ban_reason,
     )
 
 @app.route("/appeal", methods=["POST"])

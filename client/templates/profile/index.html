@@ -11,14 +11,14 @@
   <body>
     {% if user_ban_appeal_data is none %}
     <h1>Pakcord Ban Appeal</h1>
-    {% if user_ban_record is not none %}
+    {% if ban_reason is not none %}
     <div class="container ban-reason">
       <p style="font-size: 0.8rem;">Ban reason</p>
-      <p style="opacity: 0.6;">{{ user_ban_record.reason }}</p>
+      <p style="opacity: 0.6;">{{ ban_reason }}</p>
     </div>
     {% endif %}
     <form class="form" action="/appeal" method="POST" onsubmit="onFormSubmit(event)">
-      {% if user_ban_record is not none %}
+      {% if ban_reason is not none %}
       <label for="ban_reason">Considering the above-mentioned reason, why do you believe you were banned?</label>
       {% else %}
       <label for="ban_reason">Why do you believe you were banned?</label>
