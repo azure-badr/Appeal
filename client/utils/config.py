@@ -14,4 +14,5 @@ if os.environ.get("ENVIRONMENT") == "production":
     "ENVIRONMENT": os.environ.get("ENVIRONMENT")
   }
 else:
-  config = json.load(open("../config.json"))
+  config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config.json")
+  config = json.load(open(config_path))
