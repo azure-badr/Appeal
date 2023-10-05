@@ -29,6 +29,33 @@ async def on_member_ban(guild, user):
 					{ "user_id": user.id }, 
 					{ "$set": { "current_appeal": None } }
 				)
+		
+		# Create new ban record
+
+		ban_time = int(time.time())
+		ban_entry = await guild.fetch_ban(user)
+		ban_reason = ban_entry.reason
+
+		# If banner is a bot, get the banner's reason from the ban reason
+		if ban_entry.user.bot:
+			# Assuming the bot's reason is in the format "User | Reason"
+			ban_reason_sentence = ban_reason.split(" | ")
+
+			ban_reason = ban_reason_sentence[1]
+
+		ban_record = {
+			"user_id": user.id,
+			"reason": ban_reason,
+			"ban_time": ban_time,
+		}
+
+		if database.banRecords.find_one({"user_id": user.id}):
+			database.banRecords.update_one({"user_id": user.id}, {"$set": ban_record})
+			print("[+] New user ban record updated", ban_record)
+			return
+		
+		database.banRecords.insert_one(ban_record)
+		print("[+] New user ban record created", ban_record)
 
 @bot.event
 async def on_member_unban(guild, user):

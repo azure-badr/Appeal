@@ -10,6 +10,21 @@ body {
   margin: 0;
 }
 
+.ban-reason {
+  border-radius: 5px;
+  background-color: #1E1F22;
+  padding: 1rem;
+  margin-bottom: 15px;
+  gap: 0.5rem;
+  max-width: 500px !important;
+  border: 1px solid #505565;
+  cursor: default;
+}
+
+.ban-reason p {
+  margin: 0;
+}
+
 .form {
   display: flex;
   justify-content: center;
