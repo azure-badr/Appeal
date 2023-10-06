@@ -213,10 +213,7 @@ async def profile():
                     user_ban_appeal_data=user_ban_appeal_data,
                 )
 
-        return """
-            <h1>You are not banned 🤦‍♀️</h1>
-            <a href="/logout">Logout</a>
-        """
+        return await render_template("not-banned/index.html")
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():

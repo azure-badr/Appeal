@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Pakcord Ban Appeal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico', _scheme='https') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='not-banned/index.css', _scheme='https') }}" />
+</head>
+<body>
+  <img class="crescent-image" src="{{ url_for('static', filename='not-banned/crescent.png', _scheme='https') }}" alt="Pakcord Logo" />
+  <h1>You are not banned! 🤔</h1>
+  <p>You can join the server using the following link: </p> 
+  <a class="link" target="_blank" href="https://discord.gg/pakcord">discord.gg/pakcord</a>
+  <a style="text-decoration: none;" href="{{ url_for('logout', _scheme='https') }}">
+    <div class="button" style="max-width: fit-content; margin-top: 2rem;">
+      Logout
+    </div>
+  </a>
+</body>
+</html>
