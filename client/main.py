@@ -131,63 +131,92 @@ async def profile():
     user_ban_appeal_data = \
         database.banAppeals.find_one({"_id": user_ban.get("current_appeal")}) if user_ban else None
     
-    # If unbanned and no current appeal
-    if user_ban and ban_entry is None:
+    print(f"[!] Ban entry from ban cache for {user_data['id']}: ", ban_entry)
+    print(f"[!] User ban data for {user_data['id']}: ", user_ban)
+    print(f"[!] User ban appeal data for {user_data['id']}: ", user_ban_appeal_data)
+
+    # If banned
+    if ban_entry is not None:
+        print(f"[!] User ({user_data['id']}) is banned. Checking if they have a current appeal...")
+        user_ban_record = database.banRecords.find_one({"user_id": user_id})
+        ban_reason = None
+
+        if user_ban_record:
+            ban_reason = user_ban_record["reason"] if user_ban_record["reason"] != "" else None
+
+        # If user has a current appeal
+        if user_ban and user_ban.get("current_appeal"):
+            print(f"[!] User ({user_data['id']}) has a current appeal", user_ban_appeal_data)
+
+            reappeal_time = user_ban_appeal_data.get("reappeal_time", None) if user_ban_appeal_data else None
+            if reappeal_time:
+                reappeal_time = reappeal_time - time.time()
+
+            # If reappeal time is / has reached 0 and ban is not permanent, then user can reappeal
+            if user_ban_appeal_data and user_ban_appeal_data.get("reappeal_time", None):
+
+                # Check if duration has passed
+                if reappeal_time <= 0 and not user_ban_appeal_data["permanent"]:
+                    database.bans.find_one_and_update(
+                        { "user_id": user_id },
+                        { "$set": { "current_appeal": None } }
+                    )
+
+                    user_ban_appeal_data = None
+
+                if reappeal_time > 0:
+                    # Get remaining time in readable format
+                    reappeal_time = datetime.timedelta(seconds=reappeal_time)
+                    reappeal_time = str(reappeal_time).split(".")[0]
+
+            
+            return await render_template(
+                "profile/index.html", 
+                user_data=user_data, 
+                user_ban_appeal_data=user_ban_appeal_data, 
+                reappeal_time=reappeal_time,
+            )
+        
+        # If user has no current appeal
+        if not user_ban:
+            print(f"[!] User ({user_data['id']}) has no ban data. Creating one...")
+            user_ban = database.bans.insert_one({
+                "user_id": user_id,
+                "username": f"{user_data['username']}#{user_data['discriminator']}",
+                "appeals": [],
+                "current_appeal": None,
+            })
+
+            print(f"[!] User ({user_data['id']}) ban data created:", user_ban)
+        
+        # If user has no current appeal
+        print(f"[!] Showing user ({user_data['id']}) appeal form page...")
+
         return await render_template(
             "profile/index.html", 
             user_data=user_data, 
-            user_ban_appeal_data=user_ban_appeal_data,
+            user_ban_appeal_data=None,
+            ban_reason=ban_reason
         )
-    
+
+    # User is not banned
     if ban_entry is None:
+        print(f"[!] User ({user_data['id']}) is not banned. Checking if they have ban data...")
+        # If user has ban data
+        if user_ban:
+            print(f"[!] User ({user_data['id']}) has ban data. Checking if user has an accepted appeal...")
+            if user_ban_appeal_data and user_ban_appeal_data.get("status") == "accepted":
+                print(f"[!] User ({user_data['id']}) has an accepted appeal. Showing accepted page...")
+                return await render_template(
+                    "profile/index.html", 
+                    user_data=user_data, 
+                    user_ban_appeal_data=user_ban_appeal_data,
+                )
+
         return """
             <h1>You are not banned 🤦‍♀️</h1>
             <a href="/logout">Logout</a>
         """
-
-    if not user_ban:
-        database.bans.insert_one({
-            "user_id": user_id,
-            "username": f"{user_data['username']}#{user_data['discriminator']}",
-            "appeals": [],
-            "current_appeal": None,
-        })
-
-    reappeal_time = user_ban_appeal_data.get("reappeal_time", None) if user_ban_appeal_data else None
-    if reappeal_time:
-        reappeal_time = reappeal_time - time.time()
-
-    # If reappeal time is / has reached 0 and ban is not permanent, then user can reappeal
-    if user_ban_appeal_data and user_ban_appeal_data.get("reappeal_time", None):
-
-        # Check if duration has passed
-        if reappeal_time <= 0 and not user_ban_appeal_data["permanent"]:
-            database.bans.find_one_and_update(
-                { "user_id": user_id },
-                { "$set": { "current_appeal": None } }
-            )
-
-            user_ban_appeal_data = None
-
-        if reappeal_time > 0:
-            # Get remaining time in readable format
-            reappeal_time = datetime.timedelta(seconds=reappeal_time)
-            reappeal_time = str(reappeal_time).split(".")[0]
-
-    user_ban_record = database.banRecords.find_one({"user_id": user_id})
-    ban_reason = None
-
-    if user_ban_record:
-        ban_reason = user_ban_record["reason"] if user_ban_record["reason"] != "" else None
-
-
-    return await render_template(
-        "profile/index.html", 
-        user_data=user_data, 
-        user_ban_appeal_data=user_ban_appeal_data, 
-        reappeal_time=reappeal_time,
-        ban_reason=ban_reason,
-    )
 
 @app.route("/appeal", methods=["POST"])
 async def ban_appeal():
