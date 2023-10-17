@@ -12,7 +12,7 @@ from quart import Quart, redirect, render_template, request, session, abort, mak
 from discord.ext import commands
 import discord
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 
 from utils.config import config
 
@@ -243,8 +243,9 @@ async def ban_appeal():
         { "$set": {
             "current_appeal": ban_appeal.inserted_id,
             "appeals": user_ban_appeal["appeals"] + [ban_appeal.inserted_id]
-        }
-    })
+        }},
+        return_document=ReturnDocument.AFTER
+    )
 
     appeal_channel = bot.get_channel(BAN_APPEAL_CHANNEL_ID)
     message = await appeal_channel.send(
