@@ -223,7 +223,7 @@ async def ban_appeal():
     
     user_id = int(user_data["id"])
     user_ban_appeal = database.bans.find_one({"user_id": user_id})
-    if user_ban_appeal.get("current"):
+    if user_ban_appeal.get("current_appeal"):
         return redirect("/profile")
 
     form = await request.form
