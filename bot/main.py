@@ -146,8 +146,8 @@ async def accept(ctx):
 	try:
 		user = await bot.fetch_user(user_id)
 		await ctx.guild.unban(user)
-	except Exception as error:
-		await thread.send(error)
+	except discord.NotFound as error:
+		await thread.send("Ban appeal accepted, but the ban has already been lifted.")
 
 	await thread.send("This ban appeal has been accepted. The user has been unbanned")
 	await thread.edit(locked=True, archived=True)
@@ -168,7 +168,7 @@ async def ban_appeal_error(ctx, error):
 	if isinstance(error, commands.MissingPermissions):
 		return
 	
-	await ctx.send("An error occured. Please try again later.", error)
+	await ctx.send(f"An error occured. Please try again later.\n{error}")
 
 @bot.event
 async def on_command_error(ctx, error):
