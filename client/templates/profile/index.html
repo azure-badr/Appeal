@@ -46,6 +46,12 @@
       <div class="container">
         <h1 class="status-text rejected">Your ban appeal has been <b>rejected</b>.</h1>
         <p class="status">Status: <span class="rejected">{{ user_ban_appeal_data.status }}</span></p>
+        {% if user_ban_appeal_data.remarks %}
+          <div class="container ban-reason">
+            <p style="font-size: 0.8rem;">Remarks</p>
+            <p style="opacity: 0.6;">{{ user_ban_appeal_data.remarks }}</p>
+          </div>
+        {% endif %}
         {% if user_ban_appeal_data.permanent %}
           <p>This ban is <b>permanent</b></p>
         {% else %}

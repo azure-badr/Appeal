@@ -93,7 +93,7 @@ def is_ban_appeal_channel():
 @bot.command()
 @is_ban_appeal_channel()
 @commands.has_permissions(ban_members=True)
-async def reject(ctx, duration_in_months=3):
+async def reject(ctx, duration_in_months=3, *, remarks: str | None = None):
 	thread = ctx.channel
 
 	original_duration_in_months = duration_in_months
@@ -110,6 +110,12 @@ async def reject(ctx, duration_in_months=3):
 		"reappeal_time": duration_in_months,
 		"permanent": False
 	}
+
+	if remarks and len(remarks) > 200:
+		await ctx.send("Remarks cannot be longer than 200 characters. Keep it short 😬")
+		return
+	
+	updated_ban_appeal["remarks"] = remarks
 
 	if original_duration_in_months == 0:
 		updated_ban_appeal["permanent"] = True
