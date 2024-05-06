@@ -23,7 +23,7 @@ if os.environ.get("ENVIRONMENT") == "DEVELOPMENT":
 else:
     database = client.appeal
 
-intents = discord.Intents(guilds=True, members=True, bans=True)
+intents = discord.Intents(guilds=True, members=True, bans=True, moderation=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 GUILD_ID = int(config["GUILD_ID"])
