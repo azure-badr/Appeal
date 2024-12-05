@@ -1,17 +1,8 @@
-import os
 import asyncio
 import time
 
-from pymongo import MongoClient
-
-from utils.config import config
-
-client = MongoClient(config["MONGODB_URI"])
-if os.environ.get("ENVIRONMENT") == "DEVELOPMENT":
-    database = client.appeal_dev
-else:
-    database = client.appeal
-
+from utils.config import config, database
+from utils.reminder import reminder
 
 import discord
 from discord.ext import commands
@@ -22,8 +13,11 @@ bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
-  guild: discord.Guild = bot.get_guild(int(config["GUILD_ID"]))
-  print(f"Online for {guild.name}")
+	guild: discord.Guild = bot.get_guild(int(config["GUILD_ID"]))
+	print(f"Online for {guild.name}")
+
+	print("Starting task for ban appeal reminders...")
+	reminder.start(bot)
 
 @bot.event
 async def on_member_ban(guild, user):
