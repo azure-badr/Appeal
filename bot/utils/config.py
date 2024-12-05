@@ -11,6 +11,7 @@ if os.environ.get("ENVIRONMENT") == "production":
     "BAN_APPEAL_CHANNEL_ID": os.environ.get("BAN_APPEAL_CHANNEL_ID"),
     "BAN_REASONS_CHANNEL_ID": os.environ.get("BAN_REASONS_CHANNEL_ID"),
     "CLIENT_TOKEN": os.environ.get("CLIENT_TOKEN"),
+    "MOD_ROLE_ID": os.environ.get("MOD_ROLE_ID"),
     "ENVIRONMENT": os.environ.get("ENVIRONMENT")
   }
 else:
