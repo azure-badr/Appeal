@@ -64,7 +64,7 @@ async def reminder(bot: commands.Bot):
       print("[!] The ban appeal is 4 days old or more.")
       print("[!] User ID", int(thread.name.split("-")[1]))
 
-      mod_role = guild.get_role(config["MOD_ROLE_ID"])
+      mod_role = guild.get_role(int(config["MOD_ROLE_ID"]))
       await thread.send(
         f"{mod_role.mention}\n"
         "This ban appeal is 4 days old or older and will be automatically rejected once it is a week old. Please review it before then."
