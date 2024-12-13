@@ -4,4 +4,4 @@ RUN pip install discord pymongo
 
 COPY . .
 
-CMD python main.py
+CMD ["python", "-u", "main.py"]

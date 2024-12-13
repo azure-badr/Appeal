@@ -6,7 +6,8 @@ import discord
 from discord.ext import commands, tasks
 
 async def reject_appeal(thread: discord.Thread):
-  await thread.send("This thread has been inactive for a week. Rejecting the appeal permanently.")
+  await thread.send("This thread has been inactive for a week. Rejecting the appeal. This user can re-appeal in 3 months.")
+  print("Rejecting appeal...")
 
   # Get user id from thread, yeah - there isn't any other way to get the appealer's id..
   try:
@@ -14,10 +15,11 @@ async def reject_appeal(thread: discord.Thread):
     updated_ban_appeal = {
       "status": "rejected",
       "attended_by": thread.owner_id, # The bot here is the owner of the thread
-      "reappeal_time": 0,
-      "permanent": True
+      "reappeal_time": 3,
+      "permanent": False
     }
     ban_appeal = database.bans.find_one({"user_id": user_id})
+    print("Got ban appeal for user ID", user_id)
     if ban_appeal is None:
       await thread.send("Failed to get ban appeal. Please reject manually.")
       return
@@ -26,6 +28,7 @@ async def reject_appeal(thread: discord.Thread):
       { "_id": ban_appeal["current_appeal"] }, 
       { "$set": updated_ban_appeal }
     )
+    print("Updated ban appeal")
     await thread.send(
       "This ban appeal has been automatically and permanently rejected due to inactivity.\n"
       "If you wish to change this decision, just `.accept` or `.reject <months> <remarks>` with your own duration."
