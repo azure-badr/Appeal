@@ -18,11 +18,6 @@ from utils.config import config
 
 client = MongoClient(config["MONGODB_URI"])
 
-if os.environ.get("ENVIRONMENT") == "DEVELOPMENT":
-    database = client.appeal_dev
-else:
-    database = client.appeal
-
 intents = discord.Intents(guilds=True, members=True, bans=True, moderation=True)
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
@@ -36,6 +31,19 @@ async def on_ready():
 app = Quart(__name__, static_folder="./templates")
 app.config['EXPLAIN_TEMPLATE_LOADING'] = True # Fix KeyError exception for template loading
 app.secret_key = os.urandom(24)
+
+if os.environ.get("ENVIRONMENT") == "DEVELOPMENT":
+    database = client.appeal_dev
+    app.config['SCHEME'] = 'http'
+    print("Set the scheme to http and database to development")
+else:
+    database = client.appeal
+    app.config['SCHEME'] = 'https'
+    print("Setting the scheme to https and database to production")
+
+@app.context_processor
+def inject_scheme():
+    return dict(scheme=app.config['SCHEME'])
 
 DISCORD_CLIENT_ID = config["CLIENT_ID"]
 DISCORD_CLIENT_SECRET = config["CLIENT_SECRET"]
