@@ -37,7 +37,7 @@ async def on_member_ban(guild, user):
 		ban_reason = ban_entry.reason
 
 		# If banner is a bot, get the banner's reason from the ban reason
-		if " | " in ban_reason:
+		if ban_reason and " | " in ban_reason:
 			# Assuming the bot's reason is in the format "User | Reason"
 			ban_reason_sentence = ban_reason.split(" | ")
 
@@ -129,18 +129,26 @@ async def reject(ctx, duration_in_months=3, *, remarks: str | None = None):
 @bot.command()
 @is_ban_appeal_channel()
 @commands.has_permissions(ban_members=True)
-async def accept(ctx):
+async def accept(ctx, *, remarks: str | None = None):
 	thread = ctx.channel
 
 	user_id = int(thread.name.split(" - ")[1])
 	ban_appeal = database.bans.find_one({"user_id": user_id})
+
+	updated_ban_appeal = {
+		"status": "accepted", 
+		"attended_by": ctx.author.id
+	}
+
+	if remarks and len(remarks) > 200:
+		await ctx.send("Remarks cannot be longer than 200 characters. Keep it short 😬")
+		return
+	
+	updated_ban_appeal["remarks"] = remarks
+
 	database.banAppeals.find_one_and_update(
 		{ "_id": ban_appeal["current_appeal"] }, 
-		{ "$set": { 
-				"status": "accepted", 
-				"attended_by": ctx.author.id
-			}
-		}
+		{ "$set": updated_ban_appeal }
 	)
 
 	try:
