@@ -52,6 +52,12 @@ async def reminder(bot: commands.Bot):
     print("Processing thread", thread.name)
     thread: discord.Thread
 
+    # If the thread was opened after being closed and locked
+    if thread.locked and not thread.archived:
+      await thread.send("This thread was opened by a moderator sending a message. Closing the thread...")
+      await thread.edit(archived=True, locked=True)
+      continue
+
     # Convert to offset-naive
     thread_created_at = thread.created_at.replace(tzinfo=None)
     
